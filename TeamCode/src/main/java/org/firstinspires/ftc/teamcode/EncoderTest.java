@@ -5,6 +5,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -17,6 +19,15 @@ public class EncoderTest extends LinearOpMode {
     private DcMotor BL = null;
     private DcMotor FR = null;
     private DcMotor BR = null;
+
+
+    private int VSPos;
+
+    private int VSTargetPos;
+
+
+    private DcMotorEx VS1 = null;
+    private DcMotorEx VS2 = null;
 
     private DcMotor leftDeadWheel = null;
     private DcMotor rightDeadWheel = null;
@@ -32,14 +43,23 @@ public class EncoderTest extends LinearOpMode {
         FR = hardwareMap.get(DcMotor.class, "FR");
         BR = hardwareMap.get(DcMotor.class, "BR");
 
-        leftDeadWheel  = hardwareMap.get(DcMotor.class, "leftDeadWheel");
-        rightDeadWheel  = hardwareMap.get(DcMotor.class, "rightDeadWheel");
-        backDeadWheel  = hardwareMap.get(DcMotor.class, "backDeadWheel");
+        VS1 = hardwareMap.get(DcMotorEx.class, "VS1");
+        VS2 = hardwareMap.get(DcMotorEx.class, "VS2");
+
+        leftDeadWheel  = hardwareMap.get(DcMotor.class, "FL");
+        rightDeadWheel  = hardwareMap.get(DcMotor.class, "BR");
+        backDeadWheel  = hardwareMap.get(DcMotor.class, "FR");
 
         FL.setDirection(DcMotor.Direction.REVERSE);
         BL.setDirection(DcMotor.Direction.REVERSE);
         FR.setDirection(DcMotor.Direction.FORWARD);
         BR.setDirection(DcMotor.Direction.FORWARD);
+
+        VS1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        VS2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        VS2.setDirection(DcMotor.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -84,6 +104,26 @@ public class EncoderTest extends LinearOpMode {
             BL.setPower(leftBackPower);
             BR.setPower(rightBackPower);
 
+            if(gamepad1.dpad_up){
+                VSTargetPos++;
+            }
+
+            if(gamepad1.dpad_down){
+                VSTargetPos--;
+            }
+
+
+
+            if(gamepad1.triangle){
+                VS1.setTargetPosition(VSTargetPos);
+                VS2.setTargetPosition(VSTargetPos);
+                VS1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                VS2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                ((DcMotorEx) VS1).setVelocity(100);
+                ((DcMotorEx) VS2).setVelocity(100);
+            }
+            VSPos = VS1.getCurrentPosition();
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
@@ -92,6 +132,16 @@ public class EncoderTest extends LinearOpMode {
             telemetry.addData("Back Deadwheel", backDeadWheel.getCurrentPosition());
             telemetry.addData("Right Deadwheel", rightDeadWheel.getCurrentPosition());
             telemetry.addData("left Deadwheel", leftDeadWheel.getCurrentPosition());
+
+
+            telemetry.addData("VS1", VS1.getCurrentPosition());
+            telemetry.addData("VS2", VS2.getCurrentPosition());
+
+            telemetry.addData("VS1T", VS1.getTargetPosition());
+            telemetry.addData("VS2T", VS2.getTargetPosition());
+            telemetry.addData("VSPos", VSPos);
+
+            telemetry.addData("VSTargetPos", VSTargetPos);
             telemetry.update();
         }
     }}

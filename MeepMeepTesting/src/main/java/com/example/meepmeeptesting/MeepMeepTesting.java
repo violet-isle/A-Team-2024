@@ -11,24 +11,13 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
-        Pose2d beginPose = new Pose2d(28, -65.5, Math.toRadians(90));
+        Pose2d beginPose = new Pose2d(28, -63, Math.toRadians(90));
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 14)
                 .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(beginPose)
-                        .splineToConstantHeading(new Vector2d(49, -38), Math.toRadians(0))
-                        .setTangent(Math.toRadians(180))
-                        .splineToLinearHeading(new Pose2d(-48, -63, Math.toRadians(180)), Math.toRadians(180 + 45/2))
-                        .setTangent(Math.toRadians(45))
-                        .splineToLinearHeading(new Pose2d(49 + 10.5, -38, Math.toRadians(90)), Math.toRadians(90))
-                        .setTangent(Math.toRadians(180))
-                        .splineToLinearHeading(new Pose2d(-48, -63, Math.toRadians(180)), Math.toRadians(180 + 45/2))
-                        .setTangent(Math.toRadians(45))
-                        .splineToLinearHeading(new Pose2d(60, -24, Math.toRadians(0)), Math.toRadians(90))
-                        .setTangent(Math.toRadians(270 -45))
-                        .splineToLinearHeading(new Pose2d(-48, -63, Math.toRadians(180)), Math.toRadians(180 + 45/2))
-                        .setTangent(Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(-24, 9, Math.toRadians(0)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(-52, -63, Math.toRadians(180+12.25)), Math.toRadians(180 + 45/2))
+
                         .build());
 
 

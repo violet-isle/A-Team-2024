@@ -36,6 +36,8 @@ public class Auto24 extends LinearOpMode {
     private DcMotor BDW = null;
 
     private Servo GR;
+    private Servo HS;
+    private Servo WR;
 
 
 
@@ -57,41 +59,51 @@ public class Auto24 extends LinearOpMode {
         BDW = hardwareMap.get(DcMotor.class, "FR");
 
         GR = hardwareMap.get(Servo.class, "GR");
+        HS = hardwareMap.get(Servo.class, "HS");
+        WR = hardwareMap.get(Servo.class, "WR");
 
 
         VS1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         VS2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //VS1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //VS2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         Pose2d beginPose = new Pose2d(28, -65.5, Math.toRadians(90));
+
+        //Pose2d beginPose = new Pose2d(8, 0, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-
-
-
+        HS.setPosition(0);
+        GR.setPosition(1);
 
 
         waitForStart();
         runtime.reset();
+
         Actions.runBlocking(
                 drive.actionBuilder(beginPose)
                         .splineToConstantHeading(new Vector2d(49, -38), Math.toRadians(0))
+                        .afterDisp(0, grabBlock())
+                        .setTangent(Math.toRadians(180))
+                        .afterDisp(80, liftBlock())
+                        .splineToLinearHeading(new Pose2d(-48, -63, Math.toRadians(180)), Math.toRadians(180 + 45/2))
+
+                        .afterDisp(0, stopLiftBlock())
+                        //.afterTime(2, extendBlock())
+                        //.afterTime(2.5, releaseBlock())
+                        //.afterTime(3, retractBlock())
+                        /***
+                        .setTangent(Math.toRadians(45))
+                        .splineToLinearHeading(new Pose2d(58, -38, Math.toRadians(90)), Math.toRadians(90))
                         .setTangent(Math.toRadians(180))
                         .splineToLinearHeading(new Pose2d(-48, -63, Math.toRadians(180)), Math.toRadians(180 + 45/2))
                         .setTangent(Math.toRadians(45))
-                        .splineToLinearHeading(new Pose2d(49 + 10.5, -38, Math.toRadians(90)), Math.toRadians(90))
-                        .setTangent(Math.toRadians(180))
-                        .splineToLinearHeading(new Pose2d(-48, -63, Math.toRadians(180)), Math.toRadians(180 + 45/2))
-                        .setTangent(Math.toRadians(45))
-                        .splineToLinearHeading(new Pose2d(60, -24, Math.toRadians(0)), Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(58, -24, Math.toRadians(0)), Math.toRadians(90))
                         .setTangent(Math.toRadians(270 -45))
                         .splineToLinearHeading(new Pose2d(-48, -63, Math.toRadians(180)), Math.toRadians(180 + 45/2))
-                        //.afterDisp(0, liftBlock())
+                        ***/
                         .build());
 
 
@@ -104,6 +116,9 @@ public class Auto24 extends LinearOpMode {
             telemetry.addData("Back Deadwheel", BDW.getCurrentPosition());
             telemetry.addData("Right Deadwheel", RDW.getCurrentPosition());
             telemetry.addData("left Deadwheel", LDW.getCurrentPosition());
+
+            telemetry.addData("VS1", VS1.getCurrentPosition());
+            telemetry.addData("VS2", VS2.getCurrentPosition());
             telemetry.update();
         }
     }
@@ -112,32 +127,44 @@ public class Auto24 extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
+                VS1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                VS2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                VS1.setPower(0.5);
+                VS2.setPower(0.5);
 
-                VS1.setTargetPosition(3200);
-                VS2.setTargetPosition(3200);
-                ((DcMotorEx) VS1).setVelocity(1000);
-                ((DcMotorEx) VS2).setVelocity(1000);
-
-                double vel = VS1.getVelocity();
-                packet.put("liftVelocity", vel);
-                return vel < 100.0;
+                return false;
             }
         };
     }
-    public Action lowerBlock() {
+    public Action stopLiftBlock() {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
+                VS1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                VS2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                VS1.setPower(0);
+                VS2.setPower(0);
 
-                VS1.setTargetPosition(0);
-                VS2.setTargetPosition(0);
-                ((DcMotorEx) VS1).setVelocity(1000);
-                ((DcMotorEx) VS2).setVelocity(1000);
-
-                double vel = VS1.getVelocity();
-                packet.put("liftVelocity", vel);
-                return vel < 100.0;
+                return false;
+            }
+        };
+    }
+    public Action extendBlock() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                HS.setPosition(0);
+                return true;
+            }
+        };
+    }
+    public Action retractBlock() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                HS.setPosition(1);
+                return true;
             }
         };
     }
@@ -145,16 +172,17 @@ public class Auto24 extends LinearOpMode {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                GR.setPosition(1);
+                GR.setPosition(0.3);
                 return true;
             }
         };
     }
+
     public Action releaseBlock() {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                GR.setPosition(0);
+                GR.setPosition(1);
                 return true;
             }
         };
