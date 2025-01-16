@@ -114,6 +114,7 @@ public class EncoderTest extends LinearOpMode {
 
 
 
+
             if(gamepad1.triangle){
                 VS1.setTargetPosition(VSTargetPos);
                 VS2.setTargetPosition(VSTargetPos);
