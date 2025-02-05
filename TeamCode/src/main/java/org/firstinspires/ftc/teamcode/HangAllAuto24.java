@@ -162,6 +162,97 @@ public class HangAllAuto24 extends LinearOpMode {
         }
     }
 
+
+    public class SlapGripper {
+        private Servo GR2;
+
+        public SlapGripper(HardwareMap hardwareMap) {
+            GR2 = hardwareMap.get(Servo.class, "GR2");
+        }
+        public class CloseGripper implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                GR2.setPosition(0);
+                return false;
+            }
+        }
+        public Action closeGripper() {
+            return new CloseGripper();
+        }
+
+        public class OpenGripper implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                GR2.setPosition(0.27);
+                return false;
+            }
+        }
+        public Action openGripper() {
+            return new OpenGripper();
+        }
+    }
+
+
+    public class SlapWrist {
+        private Servo WR2;
+
+        public SlapWrist(HardwareMap hardwareMap) {
+            WR2 = hardwareMap.get(Servo.class, "WR2");
+        }
+        public class ChamberFlip implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                WR2.setPosition(0.11);
+                return false;
+            }
+        }
+        public Action chamberFlip() {
+            return new ChamberFlip();
+        }
+
+        public class WallFlip implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                WR2.setPosition(1);
+                return false;
+            }
+        }
+        public Action wallFlip() {
+            return new WallFlip();
+        }
+    }
+
+
+    public class SlapArm {
+        private Servo ARM;
+
+        public SlapArm(HardwareMap hardwareMap) {
+            ARM = hardwareMap.get(Servo.class, "ARM");
+        }
+        public class ChamberArm implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                ARM.setPosition(0);
+                return false;
+            }
+        }
+        public Action chamberArm() {
+            return new ChamberArm();
+        }
+
+        public class WallArm implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                ARM.setPosition(0.27);
+                return false;
+            }
+        }
+        public Action wallArm() {
+            return new WallArm();
+        }
+    }
+
+
     public class Horizontal {
         private CRServo HS;
 

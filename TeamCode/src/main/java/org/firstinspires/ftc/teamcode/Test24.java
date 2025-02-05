@@ -2,16 +2,20 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp(name="Encoder Test")
-public class EncoderTest extends LinearOpMode {
+@TeleOp(name="Test24`")
+public class Test24 extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -19,6 +23,15 @@ public class EncoderTest extends LinearOpMode {
     private DcMotor BL = null;
     private DcMotor FR = null;
     private DcMotor BR = null;
+
+    private CRServo HS;
+    private Servo WR;
+    private Servo GF;
+    private Servo GR;
+
+    private AnalogInput AE = null;
+
+    private RevTouchSensor TS;
 
 
     private int VSPos;
@@ -43,12 +56,26 @@ public class EncoderTest extends LinearOpMode {
         FR = hardwareMap.get(DcMotor.class, "FR");
         BR = hardwareMap.get(DcMotor.class, "BR");
 
+
+        AE = hardwareMap.get(AnalogInput.class, "AE");
+
+
+        WR = hardwareMap.get(Servo.class, "WR");
+        HS = hardwareMap.get(CRServo.class, "HS");
+        GR = hardwareMap.get(Servo.class, "GR");
+
+
+        GF = hardwareMap.get(Servo.class, "UW");
+
         VS1 = hardwareMap.get(DcMotorEx.class, "VS1");
         VS2 = hardwareMap.get(DcMotorEx.class, "VS2");
 
         leftDeadWheel  = hardwareMap.get(DcMotor.class, "FL");
         rightDeadWheel  = hardwareMap.get(DcMotor.class, "BR");
         backDeadWheel  = hardwareMap.get(DcMotor.class, "FR");
+
+
+        TS = hardwareMap.get(RevTouchSensor.class, "TS");
 
         FL.setDirection(DcMotor.Direction.REVERSE);
         BL.setDirection(DcMotor.Direction.REVERSE);
@@ -68,72 +95,51 @@ public class EncoderTest extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        double servoInc = 0;
+        double servoPos = 0;
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            double max;
-
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
-
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
-
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-
-            if (max > 1.0) {
-                leftFrontPower  /= max;
-                rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
-            }
-
-
-            // Send calculated power to wheels
-            FL.setPower(leftFrontPower);
-            FR.setPower(rightFrontPower);
-            BL.setPower(leftBackPower);
-            BR.setPower(rightBackPower);
-
-            if(gamepad1.dpad_up){
-                VSTargetPos++;
-            }
-
-            if(gamepad1.dpad_down){
-                VSTargetPos--;
-            }
 
 
 
 
-            if(gamepad1.triangle){
-                VS1.setTargetPosition(VSTargetPos);
-                VS2.setTargetPosition(VSTargetPos);
-                VS1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                VS2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                ((DcMotorEx) VS1).setVelocity(100);
-                ((DcMotorEx) VS2).setVelocity(100);
-            }
-            VSPos = VS1.getCurrentPosition();
+            if(gamepad2.square){servoInc += 0.0001;}
+            if(gamepad2.circle){servoInc -= 0.0001;}
+
+            if(gamepad2.triangle){servoPos += servoInc;}
+            if(gamepad2.cross){servoPos -= servoInc;}
+
+
+            if(gamepad2.dpad_left){
+                GR.setPosition(servoPos);}
+            if(gamepad2.dpad_up){
+                WR.setPosition(servoPos);}
+            if(gamepad2.dpad_right){
+                GF.setPosition(servoPos);
+                }
+
+
+
+
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
 
             telemetry.addData("Back Deadwheel", backDeadWheel.getCurrentPosition());
             telemetry.addData("Right Deadwheel", rightDeadWheel.getCurrentPosition());
             telemetry.addData("left Deadwheel", leftDeadWheel.getCurrentPosition());
 
+            telemetry.addData("servo increment", servoInc);
+            telemetry.addData("servo position", servoPos);
+
+            telemetry.addData("GR2", GR.getPosition());
+            telemetry.addData("AE", AE.getVoltage());
+            telemetry.addData("GF", GF.getPosition());
+
+
+
+            telemetry.addData("TS", TS.isPressed());
 
             telemetry.addData("VS1", VS1.getCurrentPosition());
             telemetry.addData("VS2", VS2.getCurrentPosition());

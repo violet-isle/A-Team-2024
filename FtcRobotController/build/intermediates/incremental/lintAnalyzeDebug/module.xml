@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="/home/violet-isle/A-Team-2024/ATeam10.1/FtcRobotController"
+    name=":FtcRobotController"
+    type="LIBRARY"
+    maven="ATeam10.1:FtcRobotController:"
+    gradle="7.2.0"
+    buildFolder="build"
+    bootClassPath="/home/violet-isle/Android/Sdk/platforms/android-29/android.jar:/home/violet-isle/Android/Sdk/build-tools/30.0.3/core-lambda-stubs.jar"
+    javaSourceLevel="1.8"
+    compileTarget="android-29"
+    neverShrinking="true">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="debug"/>
+</lint-module>

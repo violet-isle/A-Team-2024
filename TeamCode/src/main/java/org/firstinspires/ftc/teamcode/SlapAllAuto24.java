@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-@Autonomous(name="HangAllAuto24")
+@Autonomous(name="SlapAllAuto24")
 public class SlapAllAuto24 extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -133,34 +133,6 @@ public class SlapAllAuto24 extends LinearOpMode {
     private DcMotor BDW = null;
 
 
-    public class Gripper {
-        private Servo GR;
-
-        public Gripper(HardwareMap hardwareMap) {
-            GR = hardwareMap.get(Servo.class, "GR");
-        }
-        public class CloseGripper implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                GR.setPosition(0);
-                return false;
-            }
-        }
-        public Action closeGripper() {
-            return new CloseGripper();
-        }
-
-        public class OpenGripper implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                GR.setPosition(0.27);
-                return false;
-            }
-        }
-        public Action openGripper() {
-            return new OpenGripper();
-        }
-    }
 
 
     public class SlapGripper {
@@ -172,7 +144,7 @@ public class SlapAllAuto24 extends LinearOpMode {
         public class CloseGripper implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                GR2.setPosition(0);
+                GR2.setPosition(0.5);
                 return false;
             }
         }
@@ -183,7 +155,7 @@ public class SlapAllAuto24 extends LinearOpMode {
         public class OpenGripper implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                GR2.setPosition(0.27);
+                GR2.setPosition(1);
                 return false;
             }
         }
@@ -232,7 +204,7 @@ public class SlapAllAuto24 extends LinearOpMode {
         public class ChamberArm implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                ARM.setPosition(0);
+                ARM.setPosition(0.13);
                 return false;
             }
         }
@@ -243,13 +215,36 @@ public class SlapAllAuto24 extends LinearOpMode {
         public class WallArm implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                ARM.setPosition(0.27);
+                ARM.setPosition(0.028);
                 return false;
             }
         }
         public Action wallArm() {
             return new WallArm();
         }
+        public class WallArm1 implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                ARM.setPosition(0.05);
+                return false;
+            }
+        }
+        public Action wallArm1() {
+            return new WallArm1();
+        }
+
+
+        public class InitArm implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                ARM.setPosition(0.16);
+                return false;
+            }
+        }
+        public Action initArm() {
+            return new InitArm();
+        }
+
     }
 
 
@@ -293,7 +288,7 @@ public class SlapAllAuto24 extends LinearOpMode {
 
                 double pos = AE.getVoltage();
                 packet.put("HPos", pos);
-                if (pos < 3.1) {
+                if (pos < 2.32) {
                     return true;
                 } else {
                     HS.setPower(0);
@@ -326,7 +321,7 @@ public class SlapAllAuto24 extends LinearOpMode {
         RDW = hardwareMap.get(DcMotor.class, "BR");
         BDW = hardwareMap.get(DcMotor.class, "FR");
 
-        Pose2d beginPose = new Pose2d(25, -66, Math.toRadians(90));
+        Pose2d beginPose = new Pose2d(0, -61, Math.toRadians(270));
 
 
 
@@ -338,104 +333,133 @@ public class SlapAllAuto24 extends LinearOpMode {
         //Pose2d beginPose = new Pose2d(8, 0, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        Gripper GR = new Gripper(hardwareMap);
+        SlapGripper GR2 = new SlapGripper(hardwareMap);
 
         Horizontal HS = new Horizontal(hardwareMap);
-
-        Lift lift = new Lift(hardwareMap);
-
-        Actions.runBlocking(GR.closeGripper());
-        Actions.runBlocking(HS.retractSlide());
+        SlapWrist WR2 = new SlapWrist(hardwareMap);
+        SlapArm ARM = new SlapArm(hardwareMap);
 
 
-        TrajectoryActionBuilder chamber= drive.actionBuilder(beginPose)
+
+        Actions.runBlocking(GR2.closeGripper());
+
+        Actions.runBlocking(WR2.chamberFlip());
+
+        Actions.runBlocking(new SleepAction(1));
+
+        Actions.runBlocking(ARM.initArm());
+        //Actions.runBlocking(HS.retractSlide());
+
+
+
+
+        Action chamber1 = drive.actionBuilder(beginPose)
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(0, -38, Math.toRadians(90)), Math.toRadians(90));
+                .splineToConstantHeading(new Vector2d(0, -35.5), Math.toRadians(90))
+                .build();
+        Action back1 = drive.actionBuilder(new Pose2d(0, -35.5, Math.toRadians(270)))
+                .setTangent(Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(0, -40), Math.toRadians(90))
+                .build();
 
-        Action block1 = chamber.endTrajectory().fresh()
+
+        Action zone1 = drive.actionBuilder(new Pose2d(0, -30, Math.toRadians(270)))
+                .splineToConstantHeading(new Vector2d(48, -48), Math.toRadians(180))
+                .build();
+
+        Action grab1 = drive.actionBuilder(new Pose2d(48, -48, Math.toRadians(270)))
+                .splineToConstantHeading(new Vector2d(48, -58), Math.toRadians(90))
+                .build();
+
+        Action chamber2 = drive.actionBuilder(new Pose2d(48, -58, Math.toRadians(270)))
+                .setTangent(Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-5, -35.5), Math.toRadians(90))
+                .build();
+
+        Action back2 = drive.actionBuilder(new Pose2d(-5, -35.5, Math.toRadians(270)))
+                .setTangent(Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(-5, -40), Math.toRadians(90))
+                .build();
+
+        Action block1 = drive.actionBuilder(new Pose2d(-5, -36, Math.toRadians(270)))
                 .splineToConstantHeading(new Vector2d(0, -48), Math.toRadians(90))
                 .setTangent(Math.toRadians(22.5))
-                .splineToLinearHeading(new Pose2d(40, -36, Math.toRadians(-90)), Math.toRadians(22.5))
+                .splineToLinearHeading(new Pose2d(36, -36, Math.toRadians(-90)), Math.toRadians(22.5))
                 .setTangent(Math.toRadians(90-12.5))
-                .splineToConstantHeading(new Vector2d(45, -12), Math.toRadians(270+45),
-                    null,
-                    new ProfileAccelConstraint(-5,10))
-                .splineToConstantHeading(new Vector2d(48, -55), Math.toRadians(90+45),
-                    null,
-                    new ProfileAccelConstraint(-5,10))
+                .splineToConstantHeading(new Vector2d(39, -12), Math.toRadians(270+45))
+                .setTangent(270-45)
+                .splineToConstantHeading(new Vector2d(52, -50), Math.toRadians(90+45))
+
                 .setTangent(Math.toRadians(90+45))
-                .splineToConstantHeading(new Vector2d(58, 0), Math.toRadians(270+45),
-                        null,
-                        new ProfileAccelConstraint(-5,10))
+                .splineToConstantHeading(new Vector2d(58, 0), Math.toRadians(270+45))
 
-                .splineToConstantHeading(new Vector2d(64, -24), Math.toRadians(270),
-                        null,
-                        new ProfileAccelConstraint(-5,10))
-
+                .splineToConstantHeading(new Vector2d(58, -24), Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(64, -60), Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(64, -50), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(48, -45), Math.toRadians(270))
                 .build();
-
-        Action grab1 = drive.actionBuilder(new Pose2d(64, -50, Math.toRadians(270)))
-
-                .splineToLinearHeading(new Pose2d(50, -60, Math.toRadians(0)), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(66, -64), Math.toRadians(0))
+        Action grab2 = drive.actionBuilder(new Pose2d(48, -45, Math.toRadians(270)))
+                .splineToConstantHeading(new Vector2d(48, -58), Math.toRadians(90))
                 .build();
-        Action chamber2 = drive.actionBuilder(new Pose2d(66, -64, Math.toRadians(0)))
+        Action chamber3 = drive.actionBuilder(new Pose2d(48, -58, Math.toRadians(270)))
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(9, -34.5, Math.toRadians(90)), Math.toRadians(90))
-                .build();
-        Action back = drive.actionBuilder(new Pose2d(9, -34.5, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(9, -48), Math.toRadians(90))
-                .build();
-
-        Action grab2 = drive.actionBuilder(new Pose2d(9, -48, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(0, -48), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(50, -60, Math.toRadians(0)), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(64, -64), Math.toRadians(0))
-                .build();
-        Action chamber3 = drive.actionBuilder(new Pose2d(64, -64, Math.toRadians(0)))
-                .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(-9, -34.5, Math.toRadians(90)), Math.toRadians(90))
-                .build();
-        Action back2 = drive.actionBuilder(new Pose2d(-9, -34.5, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(9, -48), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(65, -65), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(5, -35.5), Math.toRadians(90))
                 .build();
 
 
         waitForStart();
         runtime.reset();
 
-        Action chamberAction;
-        chamberAction = chamber.build();
-
 
 
         Actions.runBlocking(
-                new SequentialAction(
-                        lift.liftUp(),
-                        chamberAction,
-                        lift.liftDown(),
-                        GR.openGripper(),
-                        block1,
-                        lift.liftMoreDown(),
-                        grab1,
-                        GR.closeGripper(),
+                new SequentialAction (
+                        ARM.wallArm1(),
+                        chamber1,
+                        new SleepAction(0.3),
+                        WR2.chamberFlip(),
+                        new SleepAction(0.4),
+                        ARM.chamberArm(),
+                        new SleepAction(0.5),
+                        GR2.openGripper(),
+                        back1,
+                        new SleepAction(0.5),
+                        ARM.wallArm1(),
+                        zone1,
+                        ARM.wallArm(),
+                        WR2.wallFlip(),
                         new SleepAction(1),
-                        lift.liftUp(),
+                        grab1,
+                        new SleepAction(1),
+                        GR2.closeGripper(),
+                        new SleepAction(1),
+                        ARM.wallArm1(),
+                        new SleepAction(1),
                         chamber2,
-                        lift.liftDown(),
-                        GR.openGripper(),
-                        back,
-                        lift.liftMoreDown(),
+                        new SleepAction(0.5),
+                        WR2.chamberFlip(),
+                        new SleepAction(0.2),
+                        ARM.chamberArm(),
+                        new SleepAction(0.5),
+                        GR2.openGripper(),
+                        back2,
+                        new SleepAction(0.5),
+                        ARM.wallArm1(),
+                        new SleepAction(0.5),
+                        block1,
+
+                        ARM.wallArm(),
+                        WR2.wallFlip(),
+                        new SleepAction(1),
                         grab2,
-                        GR.closeGripper(),
-                        lift.liftUp(),
+                        new SleepAction(1),
+                        GR2.closeGripper(),
+                        new SleepAction(1),
+                        ARM.wallArm1(),
                         chamber3,
-                        lift.liftDown(),
-                        GR.closeGripper(),
-                        back2
+                        new SleepAction(1),
+                        WR2.chamberFlip(),
+                        new SleepAction(0.2),
+                        ARM.chamberArm()
                 )
         );
 

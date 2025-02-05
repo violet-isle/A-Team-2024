@@ -263,7 +263,7 @@ public class BucketAuto24 extends LinearOpMode {
 
         TrajectoryActionBuilder bucket= drive.actionBuilder(beginPose)
                 .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(-54, -64.5, Math.toRadians(180)), Math.toRadians(45));
+                .splineToLinearHeading(new Pose2d(-54, -64.5, Math.toRadians(180+22.5)), Math.toRadians(45));
 
         Action back = drive.actionBuilder(new Pose2d(-54, -64.5, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-39, -60), Math.toRadians(90))
