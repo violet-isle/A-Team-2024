@@ -136,6 +136,7 @@ public class Test24 extends LinearOpMode {
             telemetry.addData("GR2", GR.getPosition());
             telemetry.addData("AE", AE.getVoltage());
             telemetry.addData("GF", GF.getPosition());
+            telemetry.addData("WR", WR.getPosition());
 
 
 
