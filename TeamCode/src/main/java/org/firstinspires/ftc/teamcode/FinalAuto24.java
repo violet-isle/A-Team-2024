@@ -410,9 +410,7 @@ public class FinalAuto24 extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(50, -55), Math.toRadians(90+45))
                 .setTangent(Math.toRadians(90+45))
                 .splineToConstantHeading(new Vector2d(58, -12), Math.toRadians(270+45))
-
                 .splineToConstantHeading(new Vector2d(64, -24), Math.toRadians(270))
-
                 .splineToConstantHeading(new Vector2d(64, -55), Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(48, -50), Math.toRadians(270))
                 .build();
@@ -480,8 +478,10 @@ public class FinalAuto24 extends LinearOpMode {
                         GR.openGripper(),
                         GF.flipDown(),
                         back,
-                        lift.liftMoreDown(),
-                        block1,
+                        new ParallelAction(
+                            lift.liftMoreDown(),
+                            block1
+                        ),
                         lift.liftSmallUp(),
                         grab1,
                         GR.closeGripper(),
@@ -502,9 +502,14 @@ public class FinalAuto24 extends LinearOpMode {
                         ),
                         GR.openGripper(),
                         GF.flipDown(),
-                        back1,
-                        lift.liftMoreDown(),
-                        lift.liftSmallUp(),
+                        new ParallelAction(
+                                new SequentialAction(
+                                        new SleepAction(2),
+                                        lift.liftMoreDown(),
+                                        lift.liftSmallUp()
+                                ),
+                                back1
+                        ),
                         grab2,
                         GR.closeGripper(),
                         new SleepAction(0.5),
@@ -525,9 +530,14 @@ public class FinalAuto24 extends LinearOpMode {
                         GR.openGripper(),
                         new SleepAction(0.5),
                         GF.flipDown(),
-                        back2,
-                        lift.liftMoreDown(),
-                        lift.liftSmallUp(),
+                        new ParallelAction(
+                                new SequentialAction(
+                                        new SleepAction(2),
+                                        lift.liftMoreDown(),
+                                        lift.liftSmallUp()
+                                ),
+                                back2
+                        ),
                         grab3,
                         GR.closeGripper(),
                         new ParallelAction(
@@ -544,47 +554,6 @@ public class FinalAuto24 extends LinearOpMode {
                                         HS.slideStop()
                                 )
                         )
-
-
-
-
-
-                        /***
-                        new SleepAction(0.5),
-                        GR.closeGripper(),
-                        new SleepAction(0.5),
-                        lift.liftSmallishUp(),
-                        new SleepAction(0.5),
-                        GF.flipUp(),
-                        new ParallelAction(
-                                new SequentialAction(
-                                        new SleepAction(2),
-                                        lift.liftUp()
-                                ),
-                                new SequentialAction(
-                                        new SleepAction(1),
-                                        WR.wristOut()
-                                ),
-                                chamber2
-                        ),
-                        GF.flipDown(),
-                        new SleepAction(1),
-                        GR.openGripper(),
-                        back1,
-                        lift.liftMoreDown(),
-                        lift.liftSmallUp(),
-                        grab2,
-                        new SleepAction(0.5),
-                        GR.closeGripper(),
-                        new SleepAction(0.5),
-                        lift.liftMoreUp(),
-                        new SleepAction(0.5),
-                        GF.flipUp(),
-                        chamber3,
-                        GF.flipDown(),
-                        new SleepAction(1),
-                        GR.openGripper(),
-                        back2***/
 
                 )
         );
