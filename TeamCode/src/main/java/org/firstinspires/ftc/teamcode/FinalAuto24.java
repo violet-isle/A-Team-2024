@@ -74,7 +74,7 @@ public class FinalAuto24 extends LinearOpMode {
                 packet.put("liftPos", pos);
                 telemetry.addData("VS", pos);
                 telemetry.update();
-                if (pos > -58500.) {
+                if (pos > -1350) {
                     return true;
                 } else {
                     VS1.setPower(0.05);
@@ -127,7 +127,7 @@ public class FinalAuto24 extends LinearOpMode {
 
                 double pos = VS1.getCurrentPosition();
                 packet.put("liftPos", pos);
-                if (pos > -13000) {
+                if (pos > -550) {
                     return true;
                 } else {
                     VS1.setPower(0);
@@ -154,7 +154,7 @@ public class FinalAuto24 extends LinearOpMode {
                 packet.put("liftPos", pos);
                 telemetry.addData("VS", pos);
                 telemetry.update();
-                if (pos > -62000.) {
+                if (pos > -1425) {
                     return true;
                 } else {
                     VS1.setPower(0.05);
@@ -407,47 +407,49 @@ public class FinalAuto24 extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(40, -40, Math.toRadians(270)), Math.toRadians(22.5))
                 .setTangent(Math.toRadians(90-12.5))
                 .splineToConstantHeading(new Vector2d(48, -12), Math.toRadians(270+45))
-                .splineToConstantHeading(new Vector2d(50, -55), Math.toRadians(90+45))
+                .splineToConstantHeading(new Vector2d(50, -57), Math.toRadians(90+45))
                 .setTangent(Math.toRadians(90+45))
                 .splineToConstantHeading(new Vector2d(58, -12), Math.toRadians(270+45))
                 .splineToConstantHeading(new Vector2d(64, -24), Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(64, -55), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(64, -57), Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(48, -50), Math.toRadians(270))
                 .build();
 
         Action grab1 = drive.actionBuilder(new Pose2d(48, -50, Math.toRadians(270)))
-                .splineToConstantHeading(new Vector2d(48, -58), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(48, -60), Math.toRadians(-90))
                 .build();
-        Action chamber2 = drive.actionBuilder(new Pose2d(48, -58, Math.toRadians(270)))
+        Action chamber2 = drive.actionBuilder(new Pose2d(48, -60, Math.toRadians(270)))
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(9, -34.5, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(6, -40, Math.toRadians(90)), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(6, -34), Math.toRadians(90))
                 .build();
-        Action back1 = drive.actionBuilder(new Pose2d(9, -34.5, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(9, -48), Math.toRadians(90)).setTangent(Math.toRadians(-45))
+        Action back1 = drive.actionBuilder(new Pose2d(6, -34, Math.toRadians(90)))
+                .splineToConstantHeading(new Vector2d(6, -48), Math.toRadians(-45))
                 .splineToLinearHeading(new Pose2d(48, -50, Math.toRadians(-90)), Math.toRadians(90+45))
                 .build();
 
         Action grab2 = drive.actionBuilder(new Pose2d(48, -50, Math.toRadians(-90)))
-                .splineToConstantHeading(new Vector2d(48, -56), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(48, -64), Math.toRadians(-90))
                 .build();
-        Action chamber3 = drive.actionBuilder(new Pose2d(48, -56, Math.toRadians(-90)))
+        Action chamber3 = drive.actionBuilder(new Pose2d(48, -64, Math.toRadians(-90)))
                 .setTangent(Math.toRadians(90+45))
-                .splineToLinearHeading(new Pose2d(-12, -34.5, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(-9, -40, Math.toRadians(90)), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-9, -34), Math.toRadians(90))
                 .build();
-        Action back2 = drive.actionBuilder(new Pose2d(-12, -34.5, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(9, -48), Math.toRadians(90)).setTangent(Math.toRadians(-45))
+        Action back2 = drive.actionBuilder(new Pose2d(-9, -34, Math.toRadians(90)))
+                .splineToConstantHeading(new Vector2d(-9, -48), Math.toRadians(-45))
                 .splineToLinearHeading(new Pose2d(48, -50, Math.toRadians(-90)), Math.toRadians(90+45))
                 .build();
 
         Action grab3 = drive.actionBuilder(new Pose2d(48, -50, Math.toRadians(-90)))
-                .splineToConstantHeading(new Vector2d(48, -56), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(48, -60), Math.toRadians(-90))
                 .build();
-        Action chamber4 = drive.actionBuilder(new Pose2d(48, -56, Math.toRadians(-90)))
+        Action chamber4 = drive.actionBuilder(new Pose2d(48, -60, Math.toRadians(-90)))
                 .setTangent(Math.toRadians(90+45))
                 .splineToLinearHeading(new Pose2d(12, -34.5, Math.toRadians(90)), Math.toRadians(90))
                 .build();
         Action back3 = drive.actionBuilder(new Pose2d(12, -34.5, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(9, -48), Math.toRadians(90)).setTangent(Math.toRadians(-45))
+                .splineToConstantHeading(new Vector2d(12, -48), Math.toRadians(-45))
                 .splineToLinearHeading(new Pose2d(48, -50, Math.toRadians(-90)), Math.toRadians(90+45))
                 .build();
 
@@ -468,7 +470,7 @@ public class FinalAuto24 extends LinearOpMode {
                                 ),
                                 chamber,
                                 new SequentialAction(
-                                        new SleepAction(0.3),
+                                        new SleepAction(0.5),
                                         HS.slidePunch(),
                                         GF.flipUp(),
                                         new SleepAction(0.5),
@@ -482,8 +484,10 @@ public class FinalAuto24 extends LinearOpMode {
                             lift.liftMoreDown(),
                             block1
                         ),
+                        new ParallelAction(
                         lift.liftSmallUp(),
-                        grab1,
+                        grab1
+                        ),
                         GR.closeGripper(),
                         new SleepAction(0.5),
                         new ParallelAction(
@@ -493,7 +497,7 @@ public class FinalAuto24 extends LinearOpMode {
                                 ),
                                 chamber2,
                                 new SequentialAction(
-                                        new SleepAction(0.3),
+                                        new SleepAction(0.5),
                                         HS.slidePunch(),
                                         GF.flipUp(),
                                         new SleepAction(0.5),
@@ -520,7 +524,7 @@ public class FinalAuto24 extends LinearOpMode {
                                 ),
                                 chamber3,
                                 new SequentialAction(
-                                        new SleepAction(0.3),
+                                        new SleepAction(0.5),
                                         HS.slidePunch(),
                                         GF.flipUp(),
                                         new SleepAction(0.5),
@@ -528,7 +532,7 @@ public class FinalAuto24 extends LinearOpMode {
                                 )
                         ),
                         GR.openGripper(),
-                        new SleepAction(0.5),
+                        new SleepAction(0.3),
                         GF.flipDown(),
                         new ParallelAction(
                                 new SequentialAction(
@@ -547,7 +551,7 @@ public class FinalAuto24 extends LinearOpMode {
                                 ),
                                 chamber4,
                                 new SequentialAction(
-                                        new SleepAction(0.3),
+                                        new SleepAction(0.5),
                                         HS.slidePunch(),
                                         GF.flipUp(),
                                         new SleepAction(0.5),
